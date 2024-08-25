@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AllinOne Stock</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      width: 80%;
+      max-width: 300px;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 18px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .input-group {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      height: 30px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .show-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+    button {
+      width: 100%;
+      height: 40px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .title {
+      position: absolute;
+      bottom: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="display: none;" id="cadastroSection">
+    <label for="name">Nome:</label>
+    <input type="text" id="name" />
+    <label for="emailCad">Email:</label>
+    <input type="email" id="emailCad" />
+    <label for="senhaCad">Senha:</label>
+    <div class="input-group">
+      <input type="password" id="senhaCad" />
+      <span class="show-password" onclick="togglePassword('senhaCad')">👁️</span>
+    </div>
+    <label for="confirmSenha">Confirmar Senha:</label>
+    <div class="input-group">
+      <input type="password" id="confirmSenha" />
+      <span class="show-password" onclick="togglePassword('confirmSenha')">👁️</span>
+    </div>
+    <label>
+      <span>Receber atualizações em tempo real do estoque via email?</span>
+      <input type="checkbox" id="updateEmail" />
+    </label>
+    <button onclick="handleCadastro()">Cadastre-se</button>
+    <p>Já tem uma conta? <a href="#" onclick="showLogin()">Faça login</a></p>
+  </div>
+
+  <div class="container" id="loginSection">
+    <label for="email">Email:</label>
+    <input type="email" id="email" />
+    <label for="senha">Senha:</label>
+    <div class="input-group">
+      <input type="password" id="senha" />
+      <span class="show-password" onclick="togglePassword('senha')">👁️</span>
+    </div>
+    <button onclick="handleLogin()">Login</button>
+    <p>Não tem uma conta? <a href="#" onclick="showCadastro()">Cadastre-se</a></p>
+  </div>
+  
+  <div class="title">AllinOne Stock</div>
+
+  <script>
+    function handleLogin() {
+      var email = document.getElementById('email').value;
+      var senha = document.getElementById('senha').value;
+      
+      console.log('Email:', email);
+      console.log('Senha:', senha);
+      
+      // Lógica de login simplificada para exemplo
+      var savedEmail = localStorage.getItem('email');
+      var savedSenha = localStorage.getItem('senha');
+
+      if (email === savedEmail && senha === savedSenha) {
+        window.location.href = "menu.html"; // Redireciona para a página do menu
+      } else {
+        alert('Credenciais inválidas. Tente novamente.');
+      }
+    }
+
+    function handleCadastro() {
+      var name = document.getElementById('name').value;
+      var email = document.getElementById('emailCad').value;
+      var senha = document.getElementById('senhaCad').value;
+      var confirmSenha = document.getElementById('confirmSenha').value;
+      var updateEmail = document.getElementById('updateEmail').checked;
+
+      if (senha !== confirmSenha) {
+        alert('As senhas não coincidem. Por favor, tente novamente.');
+        return;
+      }
+
+      console.log('Nome:', name);
+      console.log('Email:', email);
+      console.log('Senha:', senha);
+      console.log('Confirmar Senha:', confirmSenha);
+      console.log('Deseja receber atualizações via email:', updateEmail);
+
+      // Grava o email e senha no armazenamento local
+      localStorage.setItem('email', email);
+      localStorage.setItem('senha', senha);
+
+      // Exibe mensagem de sucesso e redireciona para a tela de login
+      alert('Usuário cadastrado com sucesso! Faça login para continuar.');
+      showLogin();
+    }
+
+    function showCadastro() {
+      document.getElementById('cadastroSection').style.display = "block";
+      document.getElementById('loginSection').style.display = "none";
+    }
+
+    function showLogin() {
+      document.getElementById('cadastroSection').style.display = "none";
+      document.getElementById('loginSection').style.display = "block";
+    }
+
+    function togglePassword(id) {
+      var input = document.getElementById(id);
+      if (input.type === "password") {
+        input.type = "text";
+      } else {
+        input.type = "password";
+      }
+    }
+  </script>
+</body>
+</html>

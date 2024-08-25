@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+html {
+  /*Box model stuff*/
+  margin: 0;
+  padding: 0;
+  /*Typography stuff*/
+  font-size: calc(15px + 0.39625vw);
+  /*Miscellaneous*/
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  /*Box model stuff*/
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  /*Miscellaneous*/
+  -ms-overflow-style: none; /* IE e Edge */
+  -ms-overflow-style: none; /* IE e Edge */
+  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none; /* Firefox */
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+html,
+body {
+  /*Typography stuff*/
+  font-family: "Poppins", sans-serif;
+}
+button,
+input,
+label {
+  font-family: "Poppins", sans-serif;
+}
+* {
+  /*Box model stuff*/
+  margin: 0;
+  padding: 0;
+  /*Miscellaneous*/
+  box-sizing: border-box;
+}
+
+/* Estilo adicional para alinhar perfeitamente o checkbox com a mensagem */
+input[type="checkbox"] {
+  vertical-align: middle; /* Alinha verticalmente o checkbox */
+  margin-right: 5px; /* Adiciona um espaço entre o checkbox e o texto */
+}

@@ -3,6 +3,7 @@ class LoginForm extends HTMLElement {
       super();
       this.usernameField = document.createElement('input');
       this.passwordField = document.createElement('input');
+      this.domain = 'https://allinstock.app.br'; // Adicionando o domínio
 
       this.initializeUI();
   }
@@ -93,6 +94,12 @@ class LoginForm extends HTMLElement {
 
       loginButton.addEventListener('mouseleave', () => {
           loginButton.style.backgroundColor = '#00cc99';
+      });
+
+      // Aqui você pode usar o domínio para fazer chamadas, por exemplo:
+      loginButton.addEventListener('click', () => {
+          console.log('Fazendo login no domínio:', this.domain);
+          // Você pode enviar uma requisição para o domínio usando o valor de this.domain
       });
 
       return loginButton;

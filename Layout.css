@@ -1,159 +1,143 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
 .radio-inputs {
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 1rem;
-    background-color: var(--gray);
-    box-sizing: border-box;
-    box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
-    padding: 0.5rem;
-    width: 3rem;
-    transition: width 0.2s ease-in-out;
-    font-size: 1.25rem;
-  }
-  
-  .radio-inputs.expanded {
-    transition: width 0.2s ease-in-out;
-    width: 8rem;
-  }
-  
-  .radio-inputs .name span {
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-  
-  .radio-inputs.expanded .name span {
-    font-size: 0.7rem;
-    opacity: 1;
-  }
-  
-  .radio-inputs .radio input {
-    display: none;
-  }
-  
-  .radio-inputs .radio .name {
-    display: flex;
-    flex-flow: row nowrap;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    border: none;
-    gap: 0.2rem;
-    height: 2rem;
-    width: 2rem;
-    padding: 0.5rem;
-    color: var(--light-gray);
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .radio-inputs.expanded .radio .name {
-    justify-content: space-between;
-    width: 6rem;
-  }
-  
-  .radio-inputs .radio input:checked + .name {
-    background-color: var(--light-gray);
-    color: #fff;
-  }
-  
-  .radio {
-    align-self: flex-start;
-  }
-  
-  .name {
-    text-decoration: none;
-  }
-  
-  .radio-inputs.expanded .user {
-    width: 4rem;
-    height: 4rem;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .radio-inputs .user {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--gray);
-    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.25);
-    background-color: #fff;
-    border-radius: 100%;
-    width: 2.5rem;
-    height: 2.5rem;
-    aspect-ratio: 1/1;
-    margin: 0.5rem 0 1.5rem 0;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .icon {
-    aspect-ratio: 1/1;
-  }
-  
-  .switch {
-    position: relative;
-    cursor: pointer;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin: 0.5rem 0 0 0;
-    border-radius: 5px;
-  }
-  
-  .switch input {
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    cursor: pointer;
-    position: absolute;
-  }
-  
-  .switch div {
-    width: 80%;
-    height: 80%;
-    margin: 10%;
-    position: absolute;
-  }
-  
-  .switch span {
-    background-color: var(--light-gray);
-    width: 100%;
-    height: 2px;
-    border-radius: 5px;
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: transform 0.5s, width 0.5s;
-  }
-  
-  .switch .line-1 {
-    width: 50%;
-    transform: translate(-100%, -10px);
-    transform-origin: 0 0;
-  }
-  
-  .switch .line-3 {
-    width: 50%;
-    left: auto;
-    right: 0;
-    transform: translate(0, 10px);
-    transform-origin: 100% 0;
-  }
-  
-  input:checked + div span.line-1 {
-    transform: translate(0, 0) rotate(-45deg);
-  }
-  
-  input:checked + div span.line-3 {
-    transform: translate(-100%, 0) rotate(-45deg);
-  }
-  
-  input:checked + div span.line-2 {
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 3rem;
+  background-color: var(--gray);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem 0;
+  transition: width 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.radio-inputs:hover {
+  width: 12rem;
+}
+
+.radio-inputs .radio {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.radio-inputs .radio .name {
+  padding: 0.5rem 1rem;
+  color: var(--light-gray);
+  background-color: transparent;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.radio-inputs .radio .name span {
+  display: none;
+  margin-left: 10px;
+}
+
+.radio-inputs:hover .radio .name span {
+  display: inline-block;
+}
+
+.radio-inputs .radio .name:hover {
+  background-color: var(--light-gray);
+  color: white;
+}
+
+.radio-inputs .radio input {
+  display: none;
+}
+
+/* Específico para o ícone de perfil do usuário */
+.radio-inputs .user {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.radio-inputs.expanded .user {
+  width: 4rem;
+  height: 4rem;
+}
+
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--light-gray);
+  border-radius: 50%;
+}
+
+/* Botão de alternar (switch) */
+.switch {
+  position: relative;
+  cursor: pointer;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 5px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  position: absolute;
+}
+
+.switch div {
+  width: 80%;
+  height: 80%;
+  margin: 10%;
+  position: absolute;
+}
+
+.switch span {
+  background-color: var(--light-gray);
+  width: 100%;
+  height: 2px;
+  border-radius: 5px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.5s, width 0.5s;
+}
+
+/* Linhas do botão de alternar */
+.switch .line-1 {
+  width: 50%;
+  transform: translate(-100%, -10px);
+}
+
+.switch .line-3 {
+  width: 50%;
+  transform: translate(0, 10px);
+}
+
+input:checked + div span.line-1 {
+  transform: translate(0, 0) rotate(-45deg);
+}
+
+input:checked + div span.line-3 {
+  transform: translate(-100%, 0) rotate(-45deg);
+}
+
+input:checked + div span.line-2 {
+  transform: rotate(45deg);
+}

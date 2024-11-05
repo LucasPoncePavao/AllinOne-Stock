@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Compras - Escola</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .cart {
+            background-color: #f8f8f8;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .cart-items {
+            margin-bottom: 10px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        .filters, .product-list {
+            margin-top: 20px;
+        }
+        .filters {
+            display: flex;
+            justify-content: space-between;
+        }
+        .filters select, .filters input[type="number"] {
+            padding: 5px;
+            width: 48%;
+        }
+        .product-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .product-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .product-details {
+            flex: 1;
+            padding: 0 15px;
+        }
+        .product-details h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .buy-button, .checkout-button, .back-button {
+            background-color: #004080;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+        }
+        .buy-button:hover, .checkout-button:hover, .back-button:hover {
+            background-color: #003366;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <header>
+        <h1>Página de Compras - Escola</h1>
+    </header>
+
+    <div class="container">
+        <!-- Carrinho -->
+        <section class="cart">
+            <h2>Carrinho de Compras</h2>
+            <div class="cart-items" id="cartItems">
+                <p>Seu carrinho está vazio.</p>
+            </div>
+            <p><strong>Total: R$ <span id="cartTotal">0.00</span></strong></p>
+            <button class="checkout-button" id="checkoutButton" onclick="finalizePurchase()">Finalizar Compra</button>
+            <div class="message" id="message" style="display: none;"></div>
+        </section>
+
+        <!-- Botão Voltar -->
+        <button class="back-button" onclick="goBackToMenu()">Voltar para Menu</button>
+
+        <!-- Filtros -->
+        <section class="filters">
+            <div class="category-filter">
+                <label for="category">Categoria:</label>
+                <select id="category" onchange="filterProducts()">
+                    <option value="all">Todas</option>
+                    <option value="caderno">Cadernos</option>
+                    <option value="lapis">Lápis</option>
+                    <option value="caneta">Canetas</option>
+                    <option value="borracha">Borrachas</option>
+                    <option value="mochila">Mochilas</option>
+                </select>
+            </div>
+
+            <div class="price-filter">
+                <label for="price">Preço Máximo:</label>
+                <input type="number" id="price" placeholder="R$" min="0" oninput="filterProducts()">
+            </div>
+        </section>
+
+        <!-- Lista de Produtos -->
+        <section class="product-list" id="productList">
+            <!-- Produtos -->
+            <div class="product-item" data-category="caderno" data-price="15">
+                <img src="https://via.placeholder.com/100" alt="Caderno">
+                <div class="product-details">
+                    <h3>Caderno</h3>
+                    <p>Categoria: Cadernos</p>
+                    <p>R$ 15,00</p>
+                </div>
+                <button class="buy-button" onclick="addToCart('Caderno', 15)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-item" data-category="lapis" data-price="1.5">
+                <img src="https://via.placeholder.com/100" alt="Lápis">
+                <div class="product-details">
+                    <h3>Lápis</h3>
+                    <p>Categoria: Lápis</p>
+                    <p>R$ 1,50</p>
+                </div>
+                <button class="buy-button" onclick="addToCart('Lápis', 1.5)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-item" data-category="caneta" data-price="2">
+                <img src="https://via.placeholder.com/100" alt="Caneta">
+                <div class="product-details">
+                    <h3>Caneta</h3>
+                    <p>Categoria: Canetas</p>
+                    <p>R$ 2,00</p>
+                </div>
+                <button class="buy-button" onclick="addToCart('Caneta', 2)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-item" data-category="borracha" data-price="1">
+                <img src="https://via.placeholder.com/100" alt="Borracha">
+                <div class="product-details">
+                    <h3>Borracha</h3>
+                    <p>Categoria: Borrachas</p>
+                    <p>R$ 1,00</p>
+                </div>
+                <button class="buy-button" onclick="addToCart('Borracha', 1)">Adicionar ao Carrinho</button>
+            </div>
+
+            <div class="product-item" data-category="mochila" data-price="50">
+                <img src="https://via.placeholder.com/100" alt="Mochila">
+                <div class="product-details">
+                    <h3>Mochila</h3>
+                    <p>Categoria: Mochilas</p>
+                    <p>R$ 50,00</p>
+                </div>
+                <button class="buy-button" onclick="addToCart('Mochila', 50)">Adicionar ao Carrinho</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2024 Escola. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        let cart = [];
+        let total = 0;
+
+        // Variável para verificar se o usuário entrou pela tela de 'Comprar material'
+        const fromMaterialPurchase = localStorage.getItem('fromMaterialPurchase') === 'true';
+        console.log('Acessou pela tela de comprar material:', fromMaterialPurchase);
+
+        function addToCart(productName, productPrice) {
+            cart.push({ name: productName, price: productPrice });
+            total += productPrice;
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            cartItemsContainer.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('cart-item');
+                itemElement.innerHTML = `<span>${item.name}</span><span>R$ ${item.price.toFixed(2)}</span>`;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            document.getElementById('cartTotal').innerText = total.toFixed(2);
+        }
+
+        function finalizePurchase() {
+            if (cart.length === 0) {
+                alert("Seu carrinho está vazio!");
+                return;
+            }
+
+            // Verificar se o usuário está registrado
+            const isRegistered = localStorage.getItem('email') && localStorage.getItem('senha');
+            console.log('Usuário registrado:', isRegistered);
+
+            if (!isRegistered && fromMaterialPurchase) {
+                // Se o usuário chegou pela tela de 'Comprar material', mostre a mensagem e bloqueie o redirecionamento
+                const message = document.getElementById('message');
+                message.innerText = "Você precisa se registrar para continuar.";
+                message.style.display = "block";
+                console.log('Bloqueando redirecionamento, usuário não registrado.');
+                return; // Bloqueia o redirecionamento
+            }
+
+            window.location.href = 'pagamento.html'; // Redireciona para pagamento
+        }
+
+        function filterProducts() {
+            const category = document.getElementById('category').value;
+            const maxPrice = parseFloat(document.getElementById('price').value);
+
+            document.querySelectorAll('.product-item').forEach(item => {
+                const itemCategory = item.getAttribute('data-category');
+                const itemPrice = parseFloat(item.getAttribute('data-price'));
+
+                const matchesCategory = category === 'all' || itemCategory === category;
+                const matchesPrice = isNaN(maxPrice) || itemPrice <= maxPrice;
+
+                item.style.display = matchesCategory && matchesPrice ? 'flex' : 'none';
+            });
+        }
+
+        function goBackToMenu() {
+            window.location.href = 'menu.html';
+        }
+    </script>
+</body>
+</html>

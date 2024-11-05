@@ -143,6 +143,7 @@
     <div class="role-selection">
       <button onclick="showLogin('colaborador')">Colaborador, entrar</button>
       <button onclick="showLogin('cliente')">Cliente, entrar</button>
+      <button onclick="window.location.href='compras.html'">Comprar material apenas</button> <!-- Novo botão -->
     </div>
   </div>
 
@@ -191,8 +192,10 @@
       var email = document.getElementById('email').value;
       var senha = document.getElementById('senha').value;
 
+      // Verifica as credenciais do colaborador
       if (email === 'teste@colaborador.com.br' && senha === 'colaborador123FAM') {
         window.location.href = "menu.html";
+      // Verifica as credenciais do cliente
       } else if (email === localStorage.getItem('email') && senha === localStorage.getItem('senha')) {
         window.location.href = "menu.html";
       } else {
@@ -207,11 +210,13 @@
       var confirmSenha = document.getElementById('confirmSenha').value;
       var updateEmail = document.getElementById('updateEmail').checked;
 
+      // Verifica se as senhas coincidem
       if (senha !== confirmSenha) {
         alert('As senhas não coincidem. Por favor, tente novamente.');
         return;
       }
 
+      // Armazena os dados do usuário
       localStorage.setItem('email', email);
       localStorage.setItem('senha', senha);
 

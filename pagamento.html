@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Pagamento - Escola</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header, footer {
+            background-color: #004080;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .product-list {
+            margin-bottom: 20px;
+        }
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+        .payment-form {
+            margin-top: 20px;
+        }
+        .payment-form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .payment-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .pay-button, .cancel-button, .register-button {
+            background-color: #004080;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .pay-button:hover, .cancel-button:hover, .register-button:hover {
+            background-color: #003366;
+        }
+        #qrcode {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #timer {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <header>
+        <h1>Página de Pagamento - Escola</h1>
+    </header>
+
+    <div class="container">
+        <!-- Lista de Produtos -->
+        <section class="product-list" id="productList">
+            <h2>Produtos Comprados</h2>
+            <!-- Os produtos serão preenchidos aqui via JavaScript -->
+        </section>
+
+        <!-- Formulário de Pagamento -->
+        <section class="payment-form">
+            <h2>Escolha sua forma de pagamento</h2>
+            <label for="paymentMethod">Método de pagamento:</label>
+            <select id="paymentMethod" onchange="togglePaymentFields()">
+                <option value="credit">Cartão de Crédito</option>
+                <option value="pix">PIX</option>
+                <option value="debit">Débito</option>
+                <option value="boleto">Boleto</option>
+            </select>
+
+            <div id="creditCardInfo">
+                <label for="cardNumber">Número do Cartão:</label>
+                <input type="text" id="cardNumber" placeholder="**** **** **** ****" required>
+                
+                <label for="cardName">Nome do Titular:</label>
+                <input type="text" id="cardName" placeholder="Nome completo" required>
+
+                <label for="cardCvv">CVV:</label>
+                <input type="text" id="cardCvv" placeholder="***" required>
+
+                <label for="cardCpf">CPF do Titular:</label>
+                <input type="text" id="cardCpf" placeholder="000.000.000-00" required>
+                
+                <div id="installmentsOptions" style="display:none;">
+                    <label for="installments">Parcelas:</label>
+                    <select id="installments">
+                        <option value="1">À vista</option>
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
+                        <option value="5">5x</option>
+                        <option value="6">6x</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="qrcode" style="display: none;">
+                <h3>Pagamento via PIX</h3>
+                <canvas id="canvas"></canvas>
+                <div id="timer"></div>
+            </div>
+
+            <button class="pay-button" id="payButton" onclick="processPayment()">Pagar</button>
+            <button class="cancel-button" onclick="cancelPurchase()">Cancelar Compra</button>
+            <p id="registerPrompt" style="display: none;">Não é cadastrado? <button class="register-button" onclick="redirectToRegister()">Cadastre-se para continuar</button></p>
+        </section>
+    </div>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>&copy; 2024 Escola. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Supondo que os produtos comprados são passados como um array
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let qrExpirationTimer;
+
+        function displayCartItems() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            if (cart.length === 0) {
+                productList.innerHTML = '<p>Nenhum produto encontrado.</p>';
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('product-item');
+                itemElement.innerHTML = `<span>${item.name} (Quantidade: ${item.quantity})</span><span>R$ ${item.price.toFixed(2)}</span>`;
+                productList.appendChild(itemElement);
+            });
+        }
+
+        function togglePaymentFields() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const creditCardInfo = document.getElementById('creditCardInfo');
+            const installmentsOptions = document.getElementById('installmentsOptions');
+            const qrCodeDiv = document.getElementById('qrcode');
+            const registerPrompt = document.getElementById('registerPrompt');
+
+            // Mostrar ou ocultar campos com base no método de pagamento selecionado
+            if (paymentMethod === 'credit') {
+                creditCardInfo.style.display = 'block';
+                installmentsOptions.style.display = 'block';
+                qrCodeDiv.style.display = 'none';
+                clearQRCode();
+                registerPrompt.style.display = 'none';
+            } else if (paymentMethod === 'debit') {
+                creditCardInfo.style.display = 'block';
+                installmentsOptions.style.display = 'none';
+                qrCodeDiv.style.display = 'none';
+                clearQRCode();
+                registerPrompt.style.display = 'none';
+            } else if (paymentMethod === 'pix') {
+                creditCardInfo.style.display = 'none';
+                installmentsOptions.style.display = 'none';
+                qrCodeDiv.style.display = 'block';
+                clearQRCode(); // Limpar QR Code anterior se houver
+                registerPrompt.style.display = 'none'; // Remover prompt de cadastro
+            } else if (paymentMethod === 'boleto') {
+                creditCardInfo.style.display = 'none';
+                installmentsOptions.style.display = 'none';
+                qrCodeDiv.style.display = 'none';
+                clearQRCode();
+                registerPrompt.style.display = 'none';
+            }
+        }
+
+        function startQRCodeExpiration() {
+            const timerElement = document.getElementById('timer');
+            let timeRemaining = 60; // 60 segundos
+
+            timerElement.innerHTML = `QR Code válido por: ${timeRemaining} segundos`;
+
+            qrExpirationTimer = setInterval(() => {
+                timeRemaining--;
+                timerElement.innerHTML = `QR Code válido por: ${timeRemaining} segundos`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(qrExpirationTimer);
+                    clearQRCode();
+                    alert('O QR Code expirou. Por favor, gere um novo.');
+                }
+            }, 1000);
+        }
+
+        function clearQRCode() {
+            const canvas = document.getElementById('canvas');
+            const timerElement = document.getElementById('timer');
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            timerElement.innerHTML = '';
+            if (qrExpirationTimer) {
+                clearInterval(qrExpirationTimer);
+            }
+        }
+
+        function cancelPurchase() {
+            // Redireciona para compras.html
+            window.location.href = 'compras.html'; 
+        }
+
+        function redirectToRegister() {
+            // Redireciona para TelaLogin.js
+            window.location.href = 'TelaLogin.js'; 
+        }
+
+        function processPayment() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+
+            if (paymentMethod === 'pix') {
+                // Gerar QR Code de exemplo quando "Pagar" for clicado
+                const canvas = document.getElementById('canvas');
+                const qr = new QRious({
+                    element: canvas,
+                    size: 200,
+                    value: ''
+                });
+
+                // Calcular o total da compra
+                const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+                qr.value = `00020101021129370014br.gov.bcb.pix0111<chave_pix>0200R$ ${totalAmount}5204000053039865400.005802BR5913Nome do Beneficiário6009Nome da Instituição62070503***6304<hash>`;
+                
+                // Exibir o QR Code
+                document.getElementById('qrcode').style.display = 'block';
+                startQRCodeExpiration();
+            } else {
+                // Processar pagamento de outras formas
+                alert('Processando pagamento por ' + paymentMethod);
+            }
+        }
+
+        // Chamar a função para exibir os itens do carrinho ao carregar a página
+        window.onload = displayCartItems;
+    </script>
+</body>
+</html>

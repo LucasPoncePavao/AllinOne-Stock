@@ -17,16 +17,23 @@
             padding: 10px 0;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
         }
-        .material-item {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
             border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #004080;
+            color: white;
         }
         .button-container {
             margin-top: 20px;
@@ -44,6 +51,10 @@
         .button:hover {
             background-color: #003366;
         }
+        .edit-form {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -54,12 +65,36 @@
     </header>
 
     <div class="container">
-        <div id="materialsList"></div>
+        <!-- Tabela de materiais -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Preço (R$)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="materialsList">
+                <!-- Itens do estoque serão inseridos aqui pelo JavaScript -->
+            </tbody>
+        </table>
 
+        <!-- Formulário para editar o item -->
+        <div id="editForm" class="edit-form">
+            <h3>Alterar Item</h3>
+            <input type="text" id="editName" placeholder="Nome do Produto">
+            <input type="number" id="editQuantity" placeholder="Quantidade">
+            <input type="number" id="editPrice" placeholder="Preço">
+            <button class="button" onclick="saveChanges()">Salvar Alterações</button>
+            <button class="button" onclick="cancelEdit()">Cancelar</button>
+        </div>
+
+        <!-- Botões principais -->
         <div class="button-container">
-            <button id="addItemButton" class="button">Adicionar Item</button>
-            <button id="deleteItemButton" class="button">Excluir Item</button>
-            <button id="backButton" class="button">Voltar</button>
+            <button id="addItemButton" class="button" onclick="addItem()">Adicionar Item</button>
+            <button id="deleteItemButton" class="button" onclick="deleteItem()">Excluir Item</button>
+            <button id="backButton" class="button" onclick="goBack()">Voltar</button>
         </div>
     </div>
 

@@ -133,27 +133,36 @@
     </footer>
 
     <script>
-        // Supondo que os produtos comprados são passados como um array
+        // Recuperar os itens do carrinho do localStorage
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let qrExpirationTimer;
 
+        // Função para exibir os itens do carrinho na página de pagamento
         function displayCartItems() {
             const productList = document.getElementById('productList');
-            productList.innerHTML = '';
+            productList.innerHTML = '';  // Limpar a lista de produtos a cada vez que a função é chamada
 
             if (cart.length === 0) {
                 productList.innerHTML = '<p>Nenhum produto encontrado.</p>';
                 return;
             }
 
+            // Exibir os itens do carrinho com nome, quantidade e preço
             cart.forEach(item => {
                 const itemElement = document.createElement('div');
                 itemElement.classList.add('product-item');
                 itemElement.innerHTML = `<span>${item.name} (Quantidade: ${item.quantity})</span><span>R$ ${item.price.toFixed(2)}</span>`;
                 productList.appendChild(itemElement);
             });
+
+            // Exibir o total da compra
+            const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+            const totalElement = document.createElement('div');
+            totalElement.classList.add('product-item');
+            totalElement.innerHTML = `<strong>Total: R$ ${totalAmount}</strong>`;
+            productList.appendChild(totalElement);
         }
 
+        // Função para alternar os campos de pagamento de acordo com o método escolhido
         function togglePaymentFields() {
             const paymentMethod = document.getElementById('paymentMethod').value;
             const creditCardInfo = document.getElementById('creditCardInfo');
@@ -161,41 +170,37 @@
             const qrCodeDiv = document.getElementById('qrcode');
             const registerPrompt = document.getElementById('registerPrompt');
 
-            // Mostrar ou ocultar campos com base no método de pagamento selecionado
             if (paymentMethod === 'credit') {
                 creditCardInfo.style.display = 'block';
                 installmentsOptions.style.display = 'block';
                 qrCodeDiv.style.display = 'none';
-                clearQRCode();
                 registerPrompt.style.display = 'none';
             } else if (paymentMethod === 'debit') {
                 creditCardInfo.style.display = 'block';
                 installmentsOptions.style.display = 'none';
                 qrCodeDiv.style.display = 'none';
-                clearQRCode();
                 registerPrompt.style.display = 'none';
             } else if (paymentMethod === 'pix') {
                 creditCardInfo.style.display = 'none';
                 installmentsOptions.style.display = 'none';
                 qrCodeDiv.style.display = 'block';
-                clearQRCode(); // Limpar QR Code anterior se houver
-                registerPrompt.style.display = 'none'; // Remover prompt de cadastro
+                registerPrompt.style.display = 'none';
             } else if (paymentMethod === 'boleto') {
                 creditCardInfo.style.display = 'none';
                 installmentsOptions.style.display = 'none';
                 qrCodeDiv.style.display = 'none';
-                clearQRCode();
                 registerPrompt.style.display = 'none';
             }
         }
 
+        // Função para iniciar a geração do QR Code para PIX
         function startQRCodeExpiration() {
             const timerElement = document.getElementById('timer');
             let timeRemaining = 60; // 60 segundos
 
             timerElement.innerHTML = `QR Code válido por: ${timeRemaining} segundos`;
 
-            qrExpirationTimer = setInterval(() => {
+            let qrExpirationTimer = setInterval(() => {
                 timeRemaining--;
                 timerElement.innerHTML = `QR Code válido por: ${timeRemaining} segundos`;
 
@@ -207,53 +212,47 @@
             }, 1000);
         }
 
+        // Função para limpar o QR Code
         function clearQRCode() {
             const canvas = document.getElementById('canvas');
             const timerElement = document.getElementById('timer');
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
             timerElement.innerHTML = '';
-            if (qrExpirationTimer) {
-                clearInterval(qrExpirationTimer);
-            }
         }
 
-        function cancelPurchase() {
-            // Redireciona para compras.html
-            window.location.href = 'compras.html'; 
-        }
-
-        function redirectToRegister() {
-            // Redireciona para TelaLogin.js
-            window.location.href = 'TelaLogin.js'; 
-        }
-
+        // Função para processar o pagamento
         function processPayment() {
             const paymentMethod = document.getElementById('paymentMethod').value;
 
             if (paymentMethod === 'pix') {
-                // Gerar QR Code de exemplo quando "Pagar" for clicado
+                // Gerar QR Code de exemplo para pagamento via PIX
                 const canvas = document.getElementById('canvas');
                 const qr = new QRious({
                     element: canvas,
-                    size: 200,
-                    value: ''
+                    value: 'https://www.exemplo.com/pix',
+                    size: 200
                 });
-
-                // Calcular o total da compra
-                const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-                qr.value = `00020101021129370014br.gov.bcb.pix0111<chave_pix>0200R$ ${totalAmount}5204000053039865400.005802BR5913Nome do Beneficiário6009Nome da Instituição62070503***6304<hash>`;
-                
-                // Exibir o QR Code
-                document.getElementById('qrcode').style.display = 'block';
                 startQRCodeExpiration();
             } else {
-                // Processar pagamento de outras formas
-                alert('Processando pagamento por ' + paymentMethod);
+                alert(`Pagamento processado via ${paymentMethod}`);
             }
         }
 
-        // Chamar a função para exibir os itens do carrinho ao carregar a página
-        window.onload = displayCartItems;
+        // Função para redirecionar para a página de cadastro
+        function redirectToRegister() {
+            window.location.href = 'TelaLogin.js';  // Redirecionar para a página de cadastro
+        }
+
+        // Função para cancelar a compra
+        function cancelPurchase() {
+            localStorage.removeItem('cart');
+            window.location.href = 'compras.html';
+        }
+
+        // Exibir os itens do carrinho assim que a página for carregada
+        displayCartItems();
+        togglePaymentFields(); // Inicializa os campos de pagamento com base no método escolhido
     </script>
+
 </body>
 </html>

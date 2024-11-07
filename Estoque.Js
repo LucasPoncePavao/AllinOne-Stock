@@ -1,79 +1,101 @@
-class Estoque {
-    constructor() {
-        this.materials = JSON.parse(localStorage.getItem('materials')) || [
-            { name: 'Caderno', quantity: 50, dateAdded: new Date().toLocaleDateString() },
-            { name: 'Lápis', quantity: 100, dateAdded: new Date().toLocaleDateString() },
-            { name: 'Borracha', quantity: 75, dateAdded: new Date().toLocaleDateString() },
-            { name: 'Estojo', quantity: 30, dateAdded: new Date().toLocaleDateString() },
-            { name: 'Mochila', quantity: 20, dateAdded: new Date().toLocaleDateString() }
-        ];
-        this.initElements();
-        this.updateMaterialList();
-    }
+// Dados iniciais de estoque
+let materials = [
+    { id: 1, name: 'Caderno', quantity: 50, price: 15.00 },
+    { id: 2, name: 'Lápis', quantity: 100, price: 1.50 },
+    { id: 3, name: 'Caneta', quantity: 75, price: 2.00 },
+    { id: 4, name: 'Estojo', quantity: 75, price: 5.00 },
+    { id: 3, name: 'Mochila', quantity: 75, price: 82.00 },
+];
 
-    initElements() {
-        this.materialsList = document.getElementById("materialsList");
-        
-        document.getElementById("addItemButton").addEventListener("click", () => this.addMaterial());
-        document.getElementById("deleteItemButton").addEventListener("click", () => this.deleteMaterial());
-        document.getElementById("backButton").addEventListener("click", () => {
-            window.location.href = "menu.html";
-        });
-    }
+// Função para exibir os itens do estoque em formato de tabela
+function displayMaterials() {
+    const materialsList = document.getElementById('materialsList');
+    materialsList.innerHTML = '';
 
-    addMaterial() {
-        const materialName = prompt("Digite o nome do material:");
-        const materialQuantity = prompt("Digite a quantidade:");
-        const dateAdded = new Date().toLocaleDateString();
+    materials.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td>R$ ${item.price.toFixed(2)}</td>
+            <td>
+                <button class="button" onclick="editItem(${item.id})">Alterar</button>
+            </td>
+        `;
+        materialsList.appendChild(row);
+    });
+}
 
-        if (materialName && materialQuantity) {
-            this.materials.push({ name: materialName, quantity: parseInt(materialQuantity), dateAdded: dateAdded });
-            this.saveData();
-            this.updateMaterialList();
-        }
-    }
-
-    deleteMaterial() {
-        const materialName = prompt("Digite o nome do material para excluir:");
-        this.materials = this.materials.filter(m => m.name !== materialName);
-        this.saveData();
-        this.updateMaterialList();
-    }
-
-    updateMaterialList() {
-        this.materialsList.innerHTML = '';
-        this.materials.forEach(material => {
-            const item = document.createElement('div');
-            item.classList.add('material-item');
-            item.innerHTML = `
-                <div>
-                    <strong>${material.name}</strong> - Quantidade: ${material.quantity} - Adicionado em: ${material.dateAdded}
-                </div>
-            `;
-            this.materialsList.appendChild(item);
-        });
-    }
-
-    saveData() {
-        localStorage.setItem('materials', JSON.stringify(this.materials));
-    }
-
-    deductMaterials(purchasedItems) {
-        purchasedItems.forEach(purchasedItem => {
-            const material = this.materials.find(m => m.name === purchasedItem.name);
-            if (material) {
-                material.quantity -= purchasedItem.quantity;
-                if (material.quantity < 0) {
-                    material.quantity = 0; // Não permitir quantidades negativas
-                }
-            }
-        });
-        this.saveData();
-        this.updateMaterialList();
+// Função para adicionar um novo item
+function addItem() {
+    const name = prompt("Nome do Produto:");
+    const quantity = parseInt(prompt("Quantidade do Produto:"));
+    const price = parseFloat(prompt("Preço do Produto:"));
+    
+    if (name && quantity && price) {
+        const newItem = {
+            id: materials.length + 1,
+            name: name,
+            quantity: quantity,
+            price: price
+        };
+        materials.push(newItem);
+        displayMaterials();
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const estoque = new Estoque();
-    window.deductMaterialsFromStock = (purchasedItems) => estoque.deductMaterials(purchasedItems);
-});
+// Função para excluir um item (selecionado pelo ID)
+function deleteItem() {
+    const itemId = parseInt(prompt("Digite o ID do item que deseja excluir:"));
+    materials = materials.filter(item => item.id !== itemId);
+    displayMaterials();
+}
+
+// Função para editar um item
+function editItem(id) {
+    const item = materials.find(item => item.id === id);
+
+    if (item) {
+        document.getElementById('editName').value = item.name;
+        document.getElementById('editQuantity').value = item.quantity;
+        document.getElementById('editPrice').value = item.price;
+
+        document.getElementById('editForm').style.display = 'block';
+
+        // Salvar alterações
+        window.currentItemId = id;
+    }
+}
+
+// Função para salvar as alterações feitas no item
+function saveChanges() {
+    const name = document.getElementById('editName').value;
+    const quantity = parseInt(document.getElementById('editQuantity').value);
+    const price = parseFloat(document.getElementById('editPrice').value);
+
+    if (name && quantity && price) {
+        const item = materials.find(item => item.id === window.currentItemId);
+        if (item) {
+            item.name = name;
+            item.quantity = quantity;
+            item.price = price;
+        }
+        displayMaterials();
+        cancelEdit();
+    } else {
+        alert("Por favor, preencha todos os campos.");
+    }
+}
+
+// Função para cancelar a edição
+function cancelEdit() {
+    document.getElementById('editForm').style.display = 'none';
+}
+
+// Função para voltar ao menu
+function goBack() {
+    window.location.href = 'menu.html'; // Supondo que "menu.html" seja a página anterior
+}
+
+// Exibir os itens ao carregar a página
+window.onload = displayMaterials;
